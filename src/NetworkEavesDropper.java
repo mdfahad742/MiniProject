@@ -26,7 +26,7 @@ public class NetworkEavesDropper {
             int v = sc.nextInt();
             int w = sc.nextInt();
             double weight = sc.nextDouble();
-            DirectedEdge e1 = new DirectedEdge(v, w, weight, false);
+            DirectedEdge e1 = new DirectedEdge(v, w, weight, BLACK);
             G.addEdge(e1);
         }
 

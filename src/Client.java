@@ -67,28 +67,37 @@ public class Client {
 
         DijkstraSP sp = new DijkstraSP(G, s);
         HashSet<Integer> secure_vertices = new HashSet<>();
-        System.out.print("Secure path from source to destination is : " + s + " to " + d + " (" + sp.distTo(d) + "): ");
+        boolean communication_successful = false;
         for (DirectedEdge e : sp.pathTo(d)) {
-            System.out.print(e + " ");
-            secure(G, e);
-            secure_vertices.add(e.to());
-            secure_vertices.add(e.from());
+            if (e.to() == d)
+                communication_successful = true;
         }
-        System.out.println();
+        if (!communication_successful)
+            System.out.println("There is no way to reach from source to destination securely");
+        else {
+            System.out.print("Secure path from source to destination is : " + s + " to " + d + " (" + sp.distTo(d) + "): ");
+            for (DirectedEdge e : sp.pathTo(d)) {
+                System.out.print(e + " ");
+                secure(G, e);
+                secure_vertices.add(e.to());
+                secure_vertices.add(e.from());
+            }
+            System.out.println();
 
 
-        int p;
-        do {
-            System.out.print("Enter a valid position of eavesdropper : ");
-            p = sc.nextInt();
-            if (secure_vertices.contains(p))
-                System.out.println("Eavesdropping from that secured position not possible");
-        } while (secure_vertices.contains(p));
+            int p;
+            do {
+                System.out.print("Enter a valid position of eavesdropper : ");
+                p = sc.nextInt();
+                if (secure_vertices.contains(p))
+                    System.out.println("Eavesdropping from that secured position not possible");
+            } while (secure_vertices.contains(p));
 
-        NetworkEavesDropper ed = new NetworkEavesDropper(G, p, secure_vertices, 0);
+            NetworkEavesDropper ed = new NetworkEavesDropper(G, p, secure_vertices, 0);
 
-        if (ed.count > 0)
-            System.out.println("Eavesdropper couldn't succeed even after breaking " + ed.count + " positions " + ed.trails);
+            if (ed.count > 0)
+                System.out.println("Eavesdropper couldn't succeed even after breaking " + ed.count + " positions " + ed.trails);
 
+        }
     }
 }

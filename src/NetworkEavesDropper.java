@@ -1,56 +1,41 @@
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.HashSet;
 
+class NetworkEavesDropper {
+    boolean[] visited;
+    int s;
+    ArrayList<Integer> trails;
+    int count;
 
-public class NetworkEavesDropper {
+    public NetworkEavesDropper(EdgeWeightedDigraph G, int s, HashSet<Integer> RED, int count) {
+        this.s = s;
+        visited = new boolean[G.V];
+        this.count = 0;
+        trails = new ArrayList<>();
 
-    public static boolean RED = true;
-    public static boolean BLACK = false;
+        dfs(G, s, RED);
 
-    public static void secure(EdgeWeightedDigraph G, DirectedEdge e) {
-        int v = e.from();
-        int w = e.to();
-        e.colour = RED;
-        if (G.adj_to[w].containsKey(v)) {
-            int ind = G.adj_to[w].get(v);
-            DirectedEdge e1 = G.adj[w].get(ind);
-            e1.colour = RED;
+    }
+
+    public void dfs(EdgeWeightedDigraph G, int v, HashSet<Integer> RED) {
+        visited[v] = true;
+        for (DirectedEdge e : G.adj[v]) {
+            int w = e.to();
+
+            if (!visited[w]) {
+                if (RED.contains(w)) {
+                    visited[w] = true;
+                    count++;
+                    trails.add(w);
+
+                }
+                else
+                    dfs(G, w, RED);
+            }
         }
     }
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int V = sc.nextInt();
-        int E = sc.nextInt();
-        EdgeWeightedDigraph G = new EdgeWeightedDigraph(V);
-        for (int i = 0; i < E; i++) {
-            int v = sc.nextInt();
-            int w = sc.nextInt();
-            double weight = sc.nextDouble();
-            DirectedEdge e1 = new DirectedEdge(v, w, weight, BLACK);
-            G.addEdge(e1);
-        }
-
-        System.out.print("Enter the source vertex : ");
-        int s = sc.nextInt();
-        System.out.print("Enter the destination vertex : ");
-        int d = sc.nextInt();
-
-        System.out.println("Enter the vertices to block & -1 to quit");
-        int block = 0;
-        while (block != -1) {
-            block = sc.nextInt();
-            if (block < 0 || block > V - 1)
-                continue;
-            G.block(block);
-        }
-
-        DijkstraSP sp = new DijkstraSP(G, s);
-        System.out.print(s + " to " + d + " (" + sp.distTo(d) + "): ");
-        for (DirectedEdge e : sp.pathTo(d)) {
-            System.out.print(e + " ");
-            secure(G, e);
-        }
-        System.out.println();
+    public Iterable<Integer> trails() {
+        return trails;
     }
-
 }

@@ -57,11 +57,15 @@ public class Client {
         int d = sc.nextInt();
 
         System.out.println("Enter the vertices to block & -1 to quit");
+        HashSet<Integer> block_vertices = new HashSet<>();
         int block = 0;
         while (block != -1) {
             block = sc.nextInt();
-            if (block < 0 || block > V - 1)
+            if (block < 0 || block > V - 1) {
+                System.out.println("Please enter valid vertex to block");
                 continue;
+            }
+            block_vertices.add(block);
             G.block(block);
         }
 
@@ -72,8 +76,10 @@ public class Client {
             if (e.to() == d)
                 communication_successful = true;
         }
+
         if (!communication_successful)
             System.out.println("There is no way to reach from source to destination securely");
+
         else {
             System.out.print("Secure path from source to destination is : " + s + " to " + d + " (" + sp.distTo(d) + "): ");
             for (DirectedEdge e : sp.pathTo(d)) {
@@ -93,10 +99,10 @@ public class Client {
                     System.out.println("Eavesdropping from that secured position not possible");
             } while (secure_vertices.contains(p));
 
-            NetworkEavesDropper ed = new NetworkEavesDropper(G, p, secure_vertices, 0);
+            NetworkEavesDropper ed = new NetworkEavesDropper(G, p, secure_vertices, block_vertices, 0);
 
             if (ed.count > 0)
-                System.out.println("Eavesdropper couldn't succeed even after breaking " + ed.count + " positions " + ed.trails);
+                System.out.println("Eavesdropper couldn't succeed even after trying to break " + ed.count + " positions " + ed.trails);
 
         }
     }
